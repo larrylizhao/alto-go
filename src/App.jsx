@@ -1,13 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
 import useLocalStorage from './hooks/useLocalStorage.js';
 import useUpdateLogger from './hooks/useUpdateLogger.js';
+import store from './redux/store.js';
+import {INCREMENT, DECREMENT} from './redux/actions.js';
+import { connect } from 'react-redux';
 
 function App() {
   const [count, setCount] = useState(0);
   const [name, setName] = useLocalStorage('name', () => 'hallo');
+
+  const dep = useMemo(() => ({
+      count
+  }), [name]);
+
+  useEffect(() => {
+      console.count('app run');
+      console.log(dep);
+  }, [dep])
+
   useUpdateLogger(name);
+
+  const increment = () => {
+      store.dispatch(INCREMENT);
+  }
+
+  const decrement = () => {
+      store.dispatch(DECREMENT);
+  }
+
   return (
     <div className="App">
       <div>
@@ -20,7 +42,7 @@ function App() {
       </div>
       <h1>Alto Go</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={increment}>
           count is {count}
         </button>
         <p>
@@ -39,4 +61,12 @@ function App() {
   )
 }
 
-export default App
+const mapStateToProps = (state) => {
+
+}
+
+const mapDispatchToProps = () => {
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
